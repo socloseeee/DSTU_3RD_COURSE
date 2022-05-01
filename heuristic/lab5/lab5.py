@@ -41,24 +41,24 @@ def crossover(parent1, parent2):
 def mutation(child, Pm):
     child_copy = deepcopy(child)
     child_genes = [e[1] for e in child_copy]
-    f.write(f'Гены до: {" ".join([str(e) for e in child_genes])}')
+    f.write(f'Genes before: {" ".join([str(e) for e in child_genes])}')
     gen = c(child_genes)
     while r(1, 100) < Pm:
         gen = c(child_genes)
-    f.write(f'\nГен: {gen}\n')
+    f.write(f'\nGene: {gen}\n')
     that_gen = deepcopy(gen)
     binary_gen = '00000000'
     for j in range(len(binary_gen)):
         binary_gen = binary_gen[:j] + str(gen % 2) + binary_gen[j + 1:]
         gen //= 2
     binary_gen = binary_gen[::-1]
-    f.write(f'Его двоичная форма: {binary_gen}')
+    f.write(f'Its binary form: {binary_gen}')
     index = r(0, len(binary_gen) - 1)
     change_bit = '1' if binary_gen[index] == '0' else '0'
     binary_gen = binary_gen[:index] + change_bit + binary_gen[index + 1:]
-    f.write(f'\nЗаменили бит: {binary_gen}\nНовое число: {int(binary_gen, 2)}\n')
+    f.write(f'\nChanged bit: {binary_gen}\nNew number: {int(binary_gen, 2)}\n')
     child_copy = [(task, genes) if genes != that_gen else (task, int(binary_gen, 2)) for task, genes in child_copy]
-    f.write(f'Гены после: {" ".join([str(e[1]) for e in child_copy])}\n')
+    f.write(f'Genes after: {" ".join([str(e[1]) for e in child_copy])}\n')
     return child_copy
 
 
@@ -68,12 +68,12 @@ def show_generation(txt_file, amount_of_generations):
         while True:
             file.seek(0)
             while True:
-                num = input('Выберите какое поколение вывести (exit - чтобы выйти) > ')
+                num = input('Choose generation to show (exit - to quit programm) > ')
                 if num.isdigit() and 0 <= int(num) <= amount_of_generations or num == 'exit':
                     chosen_generation = f"{num} GENERATION >\n"
                     break
                 else:
-                    print('Некорректный ввод!')
+                    print('Incorrect input!')
                 chosen_generation = f"{num} GENERATION >\n"
             print()
             if num == 'exit':
@@ -82,7 +82,7 @@ def show_generation(txt_file, amount_of_generations):
             new_slice = generation_tree_data[generation_tree_data.index(chosen_generation):]
             this_generation = new_slice[:new_slice.index('#\n')]
             print("".join(this_generation))
-        print('Всего хорошего!')
+        print('Good Bye!')
 
 
 # Переменные для задания ГА:
@@ -163,13 +163,14 @@ while k != counter:
     for child in generation:
         f.write(f'{" ".join(["-".join([str(e) for e in el]) for el in child])}\n')
         listMax.append(count_load(child, n))
+    f.write(f'\nTheir load:\n{newline.join([" ".join([str(el) for el in count_load(elem, n)]) for elem in generation])}\n')
 
     # Лучший результат поколения и его индекс минус 1
     best_result, currentLoad = best_load(listMax)
 
     f.write(f'\nBest child({currentLoad + 1}): {" ".join(["-".join([str(e) for e in el]) for el in generation[currentLoad]])}\n')
     f.write(f'Its parents:\n{newline.join([" ".join(["-".join([str(e) for e in el]) for el in elem]) for elem in parents_list])}')
-    f.write(f'\nTheir load: {[count_load(elem, n) for elem in parents_list]}\nBest child load: {best_result}\n')
+    f.write(f'\nTheir load:\n{newline.join([" ".join([str(el) for el in count_load(elem, n)]) for elem in parents_list])}\nBest child load: {best_result}\n')
 
     # Копируем поколение детей для того чтоб они были родителями в будущем:
     individuals = generation
