@@ -130,13 +130,13 @@ while k != counter:
     for _ in range(z):
 
         # Алгоритм образования пар родителей:
-        parent1, parent2 = c(individuals), c(individuals)
+        parent1 = c(individuals)
+        individuals_no_repeat = deepcopy(individuals)
+        individuals_no_repeat.remove(parent1)  # дабы избежать попадание рандома на первого
+        parent2 = c(individuals_no_repeat)
         f.write(f'Pair of parents:\n{" ".join(["-".join([str(e) for e in el]) for el in parent1])}\n{" ".join(["-".join([str(e) for e in el]) for el in parent2])}\n')
-        individuals_without_parent1 = deepcopy(individuals)
-        delete_parent = parent2  # дабы избежать попадание рандома на первого
-        individuals_without_parent1.remove(parent2)
         while r(0, 100) <= Pk:
-            parent2 = c(individuals_without_parent1)
+            parent2 = c(individuals_no_repeat)
         parents_list = (parent1, parent2)
 
         # Алгоритм отбора детей из потенциальных особей (2 + 2 мутанта)
