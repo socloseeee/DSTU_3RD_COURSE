@@ -92,7 +92,9 @@ def crossover(parent1, parent2):
     if T1 > T2:
         T1, T2 = T2, T1
     f.write(f'T: {T1}, {T2}\n')
+    #print(f'parents({T1},{T2}):\n{parent1}\n{parent2}')
     child1, child2 = parent1[:T1] + parent2[T1:T2+1] + parent1[T2+1:], parent2[:T1] + parent1[T1:T2+1] + parent2[T2+1:],
+    #print(f'children:\n{child1}\n{child2}')
     return child1, child2
 
 
@@ -122,8 +124,6 @@ def mutation(child, Pm):
         index1, index2 = index2, index1
     binary_gen[index1], binary_gen[index2] = binary_gen[index2], binary_gen[index1]
     binary_gen = "".join(binary_gen)
-    #change_bit = '1' if binary_gen[index] == '0' else '0'
-    #binary_gen = binary_gen[:index] + change_bit + binary_gen[index + 1:]
     f.write(f'\nChanged bit: {binary_gen}\nNew number: {int(binary_gen, 2)}\n')
     child_copy = [(genes, tasks) if genes != that_gen else (int(binary_gen, 2), tasks) for genes, tasks in child_copy]
     f.write(f'Genes after: {" ".join([str(e[0]) for e in child_copy])}\n')
@@ -207,11 +207,11 @@ while k != counter - 1:
         individuals_no_repeat = deepcopy(individuals)
         individuals_no_repeat.remove(parent1)  # дабы избежать попадание рандома на первого
         parent2 = c(individuals_no_repeat)
+        while r(0, 100) <= Pk:
+            parent2 = c(individuals_no_repeat)
         f.write(f'Pair of parents:\n')
         [fill_matrix_to_txt([parent1, parent2], i, 'parent') for i in range(2)]
         f.write(f'Parent1 load: {count_load(parent1, n)}\nParent2 load: {count_load(parent2, n)}\n')
-        while r(0, 100) <= Pk:
-            parent2 = c(individuals_no_repeat)
         parents_list = (parent1, parent2)
 
         # Алгоритм отбора детей из потенциальных особей (2 + 2 мутанта)
