@@ -4,7 +4,7 @@ from random import randint as r, choice as c
 from copy import deepcopy
 
 
-# Создаём граф
+# Создаём матрицу смежности
 def create_graph(n):
     matrix = [[0 for __ in range(n)] for _ in range(n)]
     for i in range(n):
