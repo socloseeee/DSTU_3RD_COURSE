@@ -185,7 +185,7 @@ plt.show()
 
 # Выбираем город
 city = input('Выберите город из которого выйдет коммивояжёр > ')
-while city.isdigit() == False:
+while not city.isdigit() or city not in (str(elem) for elem in range(1, n+1)):
     print('Некорректный ввод!')
     city = input('Выберите город из которого выйдет коммивояжёр > ')
 city = int(city)
