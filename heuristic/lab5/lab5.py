@@ -144,7 +144,7 @@ while k != counter:
         f.write(f'{_+1} child >')
         f.write(f'\nPair of parents:\n{" ".join(["-".join([str(e) for e in el]) for el in parent1])}\n{" ".join(["-".join([str(e) for e in el]) for el in parent2])}\n')
         crossover_result, T = crossover(parent1, parent2)
-        f.write(f'Potential children:\n{newline.join([" ".join(["-".join([str(e) for e in el]) for el in elem]) for elem in crossover_result])}')
+        f.write(f'Potential children(T={T}):\n{newline.join([" ".join(["-".join([str(e) for e in el]) for el in elem]) for elem in crossover_result])}\n')
         for i, child in enumerate(crossover_result):
             goldberg_selection.append(child)
             load_list.append(count_load(child, n))
