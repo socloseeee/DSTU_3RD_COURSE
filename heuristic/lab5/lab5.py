@@ -154,9 +154,11 @@ while k != counter:
             load_list.append(count_load(muted_child, n))
             f.write(f'{i+1} Potential child(with mutation): {" ".join(["-".join([str(e) for e in el]) for el in muted_child])}\nIts load: {load_list[-1]}\n')
         goldberg_selection.append(parent1)
+        goldberg_selection.append(parent2)
         load_list.append(count_load(parent1, n))
+        load_list.append(count_load(parent2, n))
         best_result, best_index = best_load(load_list)
-        f.write(f'Children + parent loads (4+1): {[max(elem) for elem in load_list]}\n')
+        f.write(f'Children + parents loads (4+2): {[max(elem) for elem in load_list]}\n')
         if best_index == 0:
             f.write(f'1 potential child(without mutation) wins!\n')
         elif best_index == 1:
@@ -165,8 +167,10 @@ while k != counter:
             f.write(f'2 potential child(without mutation) wins!\n')
         elif best_index == 3:
             f.write(f'2 potential child(with mutation) wins!\n')
+        elif best_index == 4:
+            f.write(f'Parent1 wins!\n')
         else:
-            f.write(f'Parent wins!\n')
+            f.write(f'Parent2 wins!\n')
         f.write(f'\n')
         best_individual_now = goldberg_selection[best_index]
         generation.append(best_individual_now)
