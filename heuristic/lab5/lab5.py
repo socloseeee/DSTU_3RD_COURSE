@@ -34,7 +34,7 @@ def best_load(max_loads):
 def crossover(parent1, parent2):
     T = r(1, len(parent1) - 1)
     child1, child2 = parent1[:T] + parent2[T:], parent2[:T] + parent1[T:]
-    return child1, child2
+    return (child1, child2), T
 
 
 # Мутация
@@ -96,7 +96,7 @@ Pk = 88  # вероятность кроссовера
 Pm = 98  # вероятность мутации
 
 # Открываем файл для записи:
-txt_file = 'lab5_results.txt'
+txt_file = r'lab5_results.txt'
 f = open(txt_file, 'w')
 
 # Генерируем нулевое поколение:
@@ -126,7 +126,7 @@ while k != counter:
     gen_count += 1
     generation = []
     best_generation_loads = []
-    f.write(f'\n{gen_count} GENERATION >\nParents:\n{newline.join([" ".join(["-".join([str(elem) for elem in e])  for e in el]) for el in individuals])}\n')
+    f.write(f'\n{gen_count} GENERATION >\nParents:\n{newline.join([" ".join(["-".join([str(elem) for elem in e])  for e in el]) for el in individuals])}\n\n')
     for _ in range(z):
 
         # Алгоритм образования пар родителей:
@@ -134,36 +134,50 @@ while k != counter:
         individuals_no_repeat = deepcopy(individuals)
         individuals_no_repeat.remove(parent1)  # дабы избежать попадание рандома на первого
         parent2 = c(individuals_no_repeat)
-        f.write(f'Pair of parents:\n{" ".join(["-".join([str(e) for e in el]) for el in parent1])}\n{" ".join(["-".join([str(e) for e in el]) for el in parent2])}\n')
         while r(0, 100) <= Pk:
             parent2 = c(individuals_no_repeat)
         parents_list = (parent1, parent2)
 
         # Алгоритм отбора детей из потенциальных особей (2 + 2 мутанта)
-        children = []
+        goldberg_selection = []
         load_list = []
-        counter_child = 0
-        f.write(f'\n{_+1} child >\n')
-        for i, child in enumerate(crossover(parent1, parent2)):
-            children.append(child)
+        f.write(f'{_+1} child >')
+        f.write(f'\nPair of parents:\n{" ".join(["-".join([str(e) for e in el]) for el in parent1])}\n{" ".join(["-".join([str(e) for e in el]) for el in parent2])}\n')
+        crossover_result, T = crossover(parent1, parent2)
+        f.write(f'Potential children:\n{newline.join([" ".join(["-".join([str(e) for e in el]) for el in elem]) for elem in crossover_result])}')
+        for i, child in enumerate(crossover_result):
+            goldberg_selection.append(child)
             load_list.append(count_load(child, n))
-            f.write(f'{counter_child+i+1} Potential child({i+1} without mutation): {" ".join(["-".join([str(e) for e in el]) for el in child])}\nIts load: {load_list[-1]}\n')
-            counter_child += 1
+            f.write(f'{i+1} Potential child(without mutation): {" ".join(["-".join([str(e) for e in el]) for el in child])}\nIts load: {load_list[-1]}\n')
             muted_child = mutation(child, Pm)
-            children.append(muted_child)
+            goldberg_selection.append(muted_child)
             load_list.append(count_load(muted_child, n))
-            f.write(f'{counter_child+i+1} Potential child({i+1} with mutation): {" ".join(["-".join([str(e) for e in el]) for el in muted_child])}\nIts load: {load_list[-1]}\n')
-        best_child_load, best_child_index = best_load(load_list)
-        f.write(f'Best child: {" ".join(["-".join([str(e) for e in el]) for el in children[best_child_index]])}\nIts load: {best_child_load}\n')
-        generation.append(children[best_child_index])
+            f.write(f'{i+1} Potential child(with mutation): {" ".join(["-".join([str(e) for e in el]) for el in muted_child])}\nIts load: {load_list[-1]}\n')
+        goldberg_selection.append(parent1)
+        load_list.append(count_load(parent1, n))
+        best_result, best_index = best_load(load_list)
+        f.write(f'Children + parent loads (4+1): {[max(elem) for elem in load_list]}\n')
+        if best_index == 0:
+            f.write(f'1 potential child(without mutation) wins!\n')
+        elif best_index == 1:
+            f.write(f'1 potential child(with mutation) wins!\n')
+        elif best_index == 2:
+            f.write(f'2 potential child(without mutation) wins!\n')
+        elif best_index == 3:
+            f.write(f'2 potential child(with mutation) wins!\n')
+        else:
+            f.write(f'Parent wins!\n')
+        f.write(f'\n')
+        best_individual_now = goldberg_selection[best_index]
+        generation.append(best_individual_now)
 
     # Список всех детей:
     f.write('\nChildren:\n')
     listMax = []
-    for child in generation:
-        f.write(f'{" ".join(["-".join([str(e) for e in el]) for el in child])}\n')
+    for i, child in enumerate(generation):
+        f.write(f'{str(i + 1) + ") " + " ".join(["-".join([str(e) for e in el]) for el in child])}\n')
         listMax.append(count_load(child, n))
-    f.write(f'\nTheir load:\n{newline.join([" ".join([str(el) for el in count_load(elem, n)]) for elem in generation])}\n')
+    f.write(f'\nTheir load:\n{newline.join([str(i + 1) + ") " + " ".join([str(el) for el in count_load(elem, n)]) for i, elem in enumerate(generation)])}\n')
 
     # Лучший результат поколения и его индекс минус 1
     best_result, currentLoad = best_load(listMax)
