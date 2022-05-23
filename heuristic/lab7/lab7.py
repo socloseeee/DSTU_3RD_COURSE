@@ -73,46 +73,15 @@ def crossover(parent1, parent2):
     T = r(1, len(parent1[0]) - 1)
     parent1_path, parent1_weights = parent1
     parent2_path, parent2_weights = parent2
-    child1_path, child2_path = parent1_path[:T] + parent2_path[T:], parent2_path[:T] + parent1_path[T:]
-    index1, index2 = [], []
-    for i in range(len(parent1[0])):
-        if child1_path.count(i + 1) > 1 and i + 1 != parent1_path[0]:
-            index = child1_path[::-1].index(i + 1)
-            index1.append(len(parent1[0]) - index - 1)
-            child1_path[::-1].remove(child1_path[index])
-        if child2_path.count(i + 1) > 1 and i + 1 != parent2_path[0]:
-            index = child2_path[::-1].index(i + 1)
-            index2.append(len(parent1[0]) - index - 1)
-            child2_path[::-1].remove(child2_path[index])
-    child1_path = child1_path[:-1]
-    child2_path = child2_path[:-1]
-    last1, last2 = child1_path[-1], child2_path[-1]
-    child1_added, child2_added = [], []  # добавляем точки для последующего рассчёта весов
-    for elem in [el for el in range(1, len(parent1[0]))]:
-        if elem != parent1[0][0] and elem not in child1_path:
-            child1_added.append(elem)
-            child1_path.append(elem)
-    child1_path.append(parent1[0][0])
-    for elem in [el for el in range(1, len(parent1[0]))]:
-        if elem != parent1[0][0] and elem not in child2_path:
-            child2_added.append(elem)
-            child2_path.append(elem)
-    child2_path.append(parent1[0][0])
-    for elem in child1_path:
-        if child1_path.count(elem) > 1 and elem != city:
-            child1_path = child1_path[::-1]
-            while child1_path.count(elem) > 1:
-                child1_path.remove(elem)
-            child1_path = child1_path[::-1]
-    for elem in child2_path:
-        if child2_path.count(elem) > 1 and elem != city:
-            child2_path = child2_path[::-1]
-            while child2_path.count(elem) > 1:
-                child2_path.remove(elem)
-            child2_path = child2_path[::-1]
+    child1_path, child2_path = parent1_path[:T], parent2_path[:T]
+    [child1_path.append(elem) for elem in parent2_path if elem not in child1_path]
+    [child2_path.append(elem) for elem in parent1_path if elem not in child2_path]
+    child1_path.append(city)
+    child2_path.append(city)
     # Веса
     child1_weights, child2_weights = [graph_matrix[child1_path[i]-1][child1_path[i+1]-1] for i in range(len(child1_path)-1)], [graph_matrix[child2_path[i]-1][child2_path[i+1]-1] for i in range(len(child2_path)-1)]
     return ((child1_path, child1_weights), (child2_path, child2_weights)), T
+
 
 
 # Мутация:
