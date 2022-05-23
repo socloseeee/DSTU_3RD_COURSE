@@ -22,24 +22,24 @@ def create_graph(n):
 
 # Жадный алгоритм (Метод Критического Пути):
 def greedy_algorithm(n, chosen_city):
-    city_checked, weights, i, next = [chosen_city], [], 0, True
-    while len(city_checked) != n:
-        if next:
-            copy_point = deepcopy(graph_matrix[i])  # копируем пути из i-й точки
-            copy_point.remove(0)  # удаляем 0 чтобы выявить минимальный элемент
-        value = graph_matrix[i].index(min(copy_point)) + 1
-        if value in city_checked or value == chosen_city:
-            next = False
-            copy_point.remove(min(copy_point))
-        else:
-            city_checked.append(value)
-            i = value - 1
-            next = True
+    city_checked, weights, i, next = [chosen_city], [], chosen_city, True
+    all_city = [elem for elem in range(1, n + 1) if elem != chosen_city]
+    while len(city_checked) < n:
+        length_of_pathes, index_improve = [], 0
+        point_pathes = deepcopy(graph_matrix[i-1])
+        for j in range(len(point_pathes)):
+            if j + 1 not in all_city:
+                point_pathes[j] = max(graph_matrix[i-1]) + 1
+        for col in all_city:
+            if point_pathes[col-1] != 0:
+                length_of_pathes.append(point_pathes[col-1])
+        best_path = point_pathes.index(min(length_of_pathes)) + 1
+        city_checked.append(best_path)
+        all_city.remove(best_path)
+        i = best_path
     city_checked.append(chosen_city)
-    from_, to_ = 0, 0
-    for i in range(len(city_checked)-1):
-        from_, to_ = city_checked[i], city_checked[i+1]
-        weights.append(graph_matrix[from_-1][to_-1])
+    # Веса
+    [weights.append(graph_matrix[city_checked[i]-1][city_checked[i+1]-1]) for i in range(len(city_checked)-1)]
     return city_checked, weights
 
 
