@@ -45,7 +45,7 @@ def greedy_algorithm(n, chosen_city):
 
 # Формируем пути(особей):
 def create_individuals(n, chosen_city):
-    city_checked, weights, i, next = [chosen_city], [], chosen_city-1, True
+    city_checked, weights, i = [chosen_city], [], chosen_city-1
     while len(city_checked) != n:
         cities = [i for i in range(1,n+1)]
         value = r(1,n)
